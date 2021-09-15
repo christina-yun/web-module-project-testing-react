@@ -6,21 +6,107 @@ import Show from './../Show';
 
 const testShow = {
     //add in approprate test data structure here.
+    name: 'Stranger Things',
+    image: {
+        medium: "https://static.tvmaze.com/uploads/images/medium_portrait/200/501942.jpg",
+        original: "https://static.tvmaze.com/uploads/images/original_untouched/200/501942.jpg"
+    },
+    seasons: [
+        {
+            id: 0, 
+            name: 'Season 1',
+            episodes:[{
+                id:1,
+                name: "Season 1 Episode 1",
+                image: "http://static.tvmaze.com/uploads/images/medium_landscape/67/168918.jpg",
+                season: 1,
+                number: 1,
+                summary: "here",
+                runtime: 1
+            },
+            {
+                id:2,
+                name: "Season 1 Episode 2",
+                image: "http://static.tvmaze.com/uploads/images/medium_landscape/67/168918.jpg",
+                season: 1,
+                number: 2,
+                summary: "there",
+                runtime: 234
+            }]
+
+        },
+        {
+            id: 1, 
+            name: 'Season 2',
+            episodes:[{
+                id:1,
+                name: "Some Name Goes Here",
+                image: "http://static.tvmaze.com/uploads/images/medium_landscape/67/168918.jpg",
+                season: 1,
+                number: 1,
+                summary: "here jeremy",
+                runtime: 1
+            },
+            {
+                id:2,
+                name: "Season 2 Episode 2",
+                image: "http://static.tvmaze.com/uploads/images/medium_landscape/67/168918.jpg",
+                season: 1,
+                number: 2,
+                summary: "there",
+                runtime: 234
+            }]
+
+        }
+    ],
+    summary: 'blah blah blah'
 }
 
 test('renders testShow and no selected Season without errors', ()=>{
+    render(<Show show={testShow} selectedSeason='none'/>)
 });
 
 test('renders Loading component when prop show is null', () => {
+    render(<Show show={null} selectedSeason='none'/>)
+
+    const loading = screen.queryByTestId('loading-container')
+
+    expect(loading).toBeInTheDocument();
 });
 
 test('renders same number of options seasons are passed in', ()=>{
+    render(<Show show={testShow} selectedSeason={'none'} />)
+
+    const selectDropDown = screen.getByLabelText(/select a season/i)
+    expect(selectDropDown).toBeInTheDocument();
+    
+    const allSeasons = screen.queryAllByTestId('season-option');
+    expect(allSeasons).toHaveLength(2);
+    expect(allSeasons).not.toHaveLength(0);
 });
 
-test('handleSelect is called when an season is selected', () => {
+test('handleSelect is called when a season is selected', () => {
+    const mockHandleSelect = jest.fn();
+
+    render(<Show show={testShow} selectedSeason={'none'} handleSelect={mockHandleSelect} />)
+
+    const selectDropDown = screen.getByLabelText(/select a season/i);
+
+    userEvent.selectOptions(selectDropDown, ['1']);
+
+    expect(mockHandleSelect.mock.calls.length).toBe(1)
+    expect(mockHandleSelect).toHaveBeenCalledTimes(1);
+    
 });
 
 test('component renders when no seasons are selected and when rerenders with a season passed in', () => {
+    const { rerender } = render(<Show show={testShow} selectedSeason={'none'} />)
+    let episodes = screen.queryByTestId('episodes-container');
+    expect(episodes).not.toBeInTheDocument();
+
+    rerender(<Show show={testShow} selectedSeason={1} /> )
+    episodes = screen.queryByTestId('episodes-container');
+    expect(episodes).toBeInTheDocument();
 });
 
 //Tasks:
