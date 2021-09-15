@@ -51,8 +51,6 @@ test("renders default image when image is not defined", ()=>{
 
     expect(image).not.toBeInTheDocument();
     expect(defaultImgText).toBeInTheDocument();
-    console.log(defaultImgText)
-
 })
 
 //Tasks
